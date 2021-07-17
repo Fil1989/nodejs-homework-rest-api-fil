@@ -2,18 +2,46 @@ const { User } = require('../dbModels/userModel')
 const bcrypt = require('bcrypt')
 const gravatar = require('gravatar')
 const jwt = require('jsonwebtoken')
+const { v4: uuidv4 } = require('uuid')
+
+const nodemailer = require('nodemailer')
 
 const registration = async (password, email, subscription) => {
   const avatarURL = gravatar.url(email)
+  const verificationtoken = uuidv4()
 
   const user = new User({
     password: await bcrypt.hash(password, 10),
     email,
     subscription,
     avatarURL,
+    verificationtoken,
   })
 
   await user.save()
+  async function main() {
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.ethereal.email',
+      port: 587,
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: 'cordia.wolff@ethereal.email',
+        pass: 'P5Bp1rWDZHhNbejZrd',
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    })
+
+    await transporter.sendMail({
+      from: 'cordia.wolff@ethereal.email',
+      to: email,
+      subject: 'Verify your email  ✔',
+      text: `Please confirm your email adress GET localhost:3001/api/users/verify/${verificationtoken}`,
+      html: `<b>Please confirm your email adress GET localhost:3001/api/users/verify/${verificationtoken}</b>`,
+    })
+  }
+  await main()
 }
 const login = async (email, password) => {
   let user = await User.findOne({
@@ -28,6 +56,9 @@ const login = async (email, password) => {
       { expiresIn: '1h' },
     )
     user.token = token
+    if (!user.verify) {
+      return { verify: user.verify }
+    }
     user = await User.findOneAndUpdate(
       { email },
       {
@@ -37,7 +68,7 @@ const login = async (email, password) => {
     user = await User.findOne({
       email,
     })
-    return user.token
+    return user
   }
   return rightPassword
 }
@@ -64,4 +95,52 @@ const getUsersService = async () => {
   const users = await User.find({})
   return users
 }
-module.exports = { registration, login, logout, changeAvatar, getUsersService }
+const verificationService = async req => {
+  const user = await User.findOneAndUpdate(
+    { verificationtoken: req.params.verificationtoken },
+    {
+      $set: { verify: true, verificationtoken: null },
+    },
+  )
+  return user
+}
+const verificationCheckService = async email => {
+  const user = await User.findOne({ email })
+  if (user.verify) {
+    return user.verify
+  } else {
+    async function main() {
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+          user: 'cordia.wolff@ethereal.email',
+          pass: 'P5Bp1rWDZHhNbejZrd',
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      })
+
+      await transporter.sendMail({
+        from: 'peacefilip1989@gmail.com',
+        to: email,
+        subject: 'Verify your email  ✔',
+        text: `Please confirm your email adress GET localhost:3001/api/users/verify/${user.verificationtoken}`,
+        html: `<b>Please confirm your email adress GET localhost:3001/api/users/verify/${user.verificationtoken}</b>`,
+      })
+    }
+    await main()
+    return user.verify
+  }
+}
+module.exports = {
+  registration,
+  login,
+  logout,
+  changeAvatar,
+  verificationService,
+  verificationCheckService,
+  getUsersService,
+}

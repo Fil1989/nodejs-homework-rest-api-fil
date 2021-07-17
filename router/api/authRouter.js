@@ -4,11 +4,15 @@ const {
   registrationController,
   loginController,
   logoutController,
-  // avatarController,
+  virifyController,
+  checkVerificationController,
   getAllUsers,
 } = require('../../controllers/authController')
 const { asyncWrapper } = require('../../errorHelpers/apiHelpers')
-const { validateUser } = require('../../middlewares/validationMiddleware')
+const {
+  validateUser,
+  validateVerification,
+} = require('../../middlewares/validationMiddleware')
 const { authMiddleware } = require('../../middlewares/authMiddleware')
 
 const multer = require('multer')
@@ -38,7 +42,11 @@ router.post('/register', validateUser, asyncWrapper(registrationController))
 router.post('/login', validateUser, asyncWrapper(loginController))
 router.post('/logout', authMiddleware, asyncWrapper(logoutController))
 router.get('/', asyncWrapper(getAllUsers))
-
-// router.patch('/avatars', authMiddleware, asyncWrapper(avatarController))
+router.get('/verify/:verificationtoken', asyncWrapper(virifyController))
+router.post(
+  '/verify',
+  validateVerification,
+  asyncWrapper(checkVerificationController),
+)
 
 module.exports = router
