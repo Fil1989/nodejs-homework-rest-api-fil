@@ -1,7 +1,8 @@
 const express = require('express')
 const logger = require('morgan')
 const cors = require('cors')
-const { errorHandler, pathError } = require('./errorHelpers/apiHelpers')
+const { WrongPathError } = require('./errorHelpers/errors')
+const { errorHandler } = require('./errorHelpers/apiHelpers')
 
 const contactsRouter = require('./router/api/contactsRouter')
 const authRouter = require('./router/api/authRouter')
@@ -18,8 +19,10 @@ app.use(express.json())
 app.use('/api/contacts', contactsRouter)
 app.use('/api/users', authRouter)
 app.use('/avatars', filesRouter)
-app.use(errorHandler)
 
-app.use(pathError)
+app.use(() => {
+  throw new WrongPathError('This is wrong endpoint')
+})
+app.use(errorHandler)
 
 module.exports = app
