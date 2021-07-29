@@ -37,6 +37,12 @@ class WrongPathError extends GoIt26NodeError {
     this.status = 404
   }
 }
+class UserDuplicateError extends GoIt26NodeError {
+  constructor(message) {
+    super(message)
+    this.status = 400
+  }
+}
 
 module.exports = {
   GoIt26NodeError,
@@ -44,5 +50,6 @@ module.exports = {
   WrongParametersError,
   NotAuthorizedError,
   WrongPathError,
+  UserDuplicateError,
   ContactNotFound,
 }
