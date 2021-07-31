@@ -2,8 +2,8 @@
   "openapi": "3.0.1",
   "info": {
     "version": "1.0.2",
-    "title": "SlimMom API",
-    "description": "API documentation for 4-group project 'SlimMom'",
+    "title": "Connnections API",
+    "description": "API documentation for Connnections project",
     "license": {
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
@@ -20,7 +20,7 @@
       "url": "http://localhost:3002"
     },
     {
-      "url": "https://app-for-contacts-collection.herokuapp.com/"
+      "url": "https://connnections.herokuapp.com/"
     }
   ],
   "tags": [
@@ -29,12 +29,12 @@
       "description": "User endpoints"
     },
     {
-      "name": "Products",
+      "name": "Contacts",
       "description": "Products endpoints"
     }
   ],
   "paths": {
-    "/users/signup": {
+    "/users/api/register": {
       "post": {
         "tags": [
           "User"
@@ -42,7 +42,7 @@
         "summary": "Create new user",
         "parameters": [],
         "requestBody": {
-          "description": "Registration's object",
+          "description": "Registration object",
           "required": true,
           "content": {
             "application/json": {
@@ -54,7 +54,7 @@
         },
         "responses": {
           "201": {
-            "description": "Created",
+            "description": "user added. Please verify by email",
             "content": {
               "application/json": {
                 "schema": {
