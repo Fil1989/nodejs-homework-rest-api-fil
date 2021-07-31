@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const { UserDuplicateError } = require('../errorHelpers/errors')
 
 const userSchema = new mongoose.Schema({
   password: {
@@ -8,7 +9,12 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: [true, 'Email is required'],
-    unique: true,
+    unique: [
+      true,
+      () => {
+        throw new UserDuplicateError('email dublication')
+      },
+    ],
   },
   subscription: {
     type: String,

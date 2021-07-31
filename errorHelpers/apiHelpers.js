@@ -1,4 +1,9 @@
-const { GoIt26NodeError, ContactNotFound } = require('./errors')
+const {
+  GoIt26NodeError,
+  ContactNotFound,
+  WrongPathError,
+  UserDuplicateError,
+} = require('./errors')
 
 const asyncWrapper = controller => {
   return (req, res, next) => {
@@ -13,15 +18,17 @@ const errorHandler = (error, req, res, next) => {
   if (error instanceof GoIt26NodeError) {
     return res.status(error.status).json({ message: error.message })
   }
+  if (error instanceof WrongPathError) {
+    return res.status(error.status).json({ message: error.message })
+  }
+  if (error instanceof UserDuplicateError) {
+    return res.status(error.status).json({ message: error.message })
+  }
 
   res.status(500).json({ message: error.message })
-}
-const pathError = (req, res) => {
-  res.status(404).json({ message: 'Not found' })
 }
 
 module.exports = {
   asyncWrapper,
   errorHandler,
-  pathError,
 }
