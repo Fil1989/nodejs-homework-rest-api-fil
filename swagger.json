@@ -187,24 +187,19 @@
         }
       }
     },
-    "/users/private": {
+    "/api/users/verify": {
       "post": {
         "tags": [
           "User"
         ],
-        "summary": "Get private information on daily calories and a list of not recommended foods",
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
+        "summary": "Checking verification of user",
         "requestBody": {
           "description": "Request object",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DailyRateRequest"
+                "$ref": "#/components/schemas/VerificationCheckRequest"
               }
             }
           }
@@ -215,7 +210,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DailyRateResponse"
+                  "$ref": "#/components/schemas/ReverificationResponse"
                 }
               }
             }
@@ -426,6 +421,18 @@
           "password": "qwerty123"
         }
       },
+      "ReverificationResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Resending of verification email"
+          }
+        },
+        "example": {
+          "message": "Verification email has been sent again"
+        }
+      },
       "RegistrationResponse": {
         "type": "object",
         "properties": {
@@ -476,44 +483,19 @@
           "message": "user login success"
         }
       },
-      "DailyRateRequest": {
+      "VerificationCheckRequest": {
         "type": "object",
         "required": [
-          "weight",
-          "height",
-          "age",
-          "desiredWeight",
-          "groupBlood"
+          "email"
         ],
         "properties": {
-          "weight": {
-            "type": "number",
-            "description": "User's weight (kg)"
-          },
-          "height": {
-            "type": "number",
-            "description": "User's height (cm)"
-          },
-          "age": {
-            "type": "number",
-            "description": "User's age",
-            "min": 18
-          },
-          "desiredWeight": {
-            "type": "number",
-            "description": "User's desired weight (cm)"
-          },
-          "groupBlood": {
-            "type": "number",
-            "description": "User's group blood"
+          "email": {
+            "type": "string",
+            "description": "User's email"
           }
         },
         "example": {
-          "weight": 80,
-          "height": 165,
-          "age": 30,
-          "desiredWeight": 70,
-          "groupBlood": 3
+          "email": "example.email@gmail.com"
         }
       },
       "UserVerification": {

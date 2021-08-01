@@ -9,8 +9,8 @@ const {
 const registrationController = async (req, res) => {
   const { password, email, subscription } = req.body
 
-  await registration(password, email, subscription)
-  res.status(201).json({ message: 'user added. Please verify by email' })
+  const message = await registration(password, email, subscription)
+  res.status(201).json({ message })
 }
 const loginController = async (req, res) => {
   const { password, email } = req.body
@@ -46,10 +46,10 @@ const virifyController = async (req, res) => {
 const checkVerificationController = async (req, res) => {
   const { email } = req.body
   const check = await verificationCheckService(email)
-  if (!check) {
-    res.status(200).json({ message: 'Verification email has been sent again' })
-  } else {
+  if (check) {
     res.status(400).json({ message: 'Verification has already been passed' })
+  } else {
+    res.status(200).json({ message: 'Verification email has been sent again' })
   }
 }
 
