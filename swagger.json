@@ -30,11 +30,11 @@
     },
     {
       "name": "Contacts",
-      "description": "Products endpoints"
+      "description": "Contacts endpoints"
     }
   ],
   "paths": {
-    "/users/api/register": {
+    "/api/users/register": {
       "post": {
         "tags": [
           "User"
@@ -78,7 +78,7 @@
         }
       }
     },
-    "/users/login": {
+    "/api/users/login": {
       "post": {
         "tags": [
           "User"
@@ -102,7 +102,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
+                  "$ref": " #/components/schemas/LoginResponse"
                 }
               }
             }
@@ -122,7 +122,7 @@
         }
       }
     },
-    "/users/logout": {
+    "/api/users/logout": {
       "post": {
         "tags": [
           "User"
@@ -149,31 +149,28 @@
         }
       }
     },
-    "/users/public": {
-      "post": {
+    "/api/users/verify/{verificationtoken}": {
+      "get": {
         "tags": [
           "User"
         ],
-        "summary": "Get public information on daily calories and a list of not recommended foods",
-        "parameters": [],
-        "requestBody": {
-          "description": "Request object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DailyRateRequest"
-              }
-            }
+        "summary": "Verification of the user",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "verificationtoken",
+            "type": "string",
+            "description": "Enter verification token",
+            "required": true
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DailyRateResponse"
+                  "$ref": "#/components/schemas/UserVerification"
                 }
               }
             }
@@ -411,15 +408,10 @@
       "RegistrationRequest": {
         "type": "object",
         "required": [
-          "name",
           "email",
           "password"
         ],
         "properties": {
-          "name": {
-            "type": "string",
-            "description": "User's name"
-          },
           "email": {
             "type": "string",
             "description": "User's email"
@@ -430,7 +422,6 @@
           }
         },
         "example": {
-          "name": "Guest",
           "email": "guest@example.com",
           "password": "qwerty123"
         }
@@ -438,18 +429,13 @@
       "RegistrationResponse": {
         "type": "object",
         "properties": {
-          "name": {
+          "message": {
             "type": "string",
-            "description": "User's name"
-          },
-          "email": {
-            "type": "string",
-            "description": "User's email"
+            "description": "user added. Please verify by email"
           }
         },
         "example": {
-          "name": "Guest",
-          "email": "guest@example.com"
+          "message": "user added. Please verify by email"
         }
       },
       "LoginRequest": {
@@ -480,14 +466,14 @@
             "type": "string",
             "description": "User's token"
           },
-          "email": {
+          "message": {
             "type": "string",
-            "description": "User's email"
+            "description": "Success message"
           }
         },
         "example": {
           "token": "JWT",
-          "email": "guest@example.com"
+          "message": "user login success"
         }
       },
       "DailyRateRequest": {
@@ -530,30 +516,16 @@
           "groupBlood": 3
         }
       },
-      "DailyRateResponse": {
+      "UserVerification": {
         "type": "object",
         "properties": {
-          "kcal": {
-            "type": "number",
-            "description": "User's daily calorie intake"
-          },
-          "productsNotRecommended": {
-            "type": "array",
-            "description": "User's list of not recommended products",
-            "items": {
-              "type": "string"
-            }
+          "message": {
+            "type": "string",
+            "description": "Successful verification message"
           }
         },
         "example": {
-          "kcal": 1420,
-          "productsNotRecommended": [
-            "мучные",
-            "орехи",
-            "зерновые",
-            "овощи и зелень",
-            "масла и жиры"
-          ]
+          "message": "Verification successful"
         }
       },
       "ProductsResponse": {

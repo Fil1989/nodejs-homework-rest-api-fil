@@ -3,7 +3,6 @@ const {
   login,
   logout,
   changeAvatar,
-  getUsersService,
   verificationService,
   verificationCheckService,
 } = require('../dbServices/authService')
@@ -27,7 +26,7 @@ const loginController = async (req, res) => {
 const logoutController = async (req, res) => {
   const token = req.token
   const nullToken = await logout(token)
-  res.status(200).json({ token: nullToken })
+  res.status(204).json({ token: nullToken })
 }
 const avatarController = async (req, res) => {
   const { avatarURL } = req.body
@@ -36,14 +35,7 @@ const avatarController = async (req, res) => {
   await changeAvatar(avatarURL, token)
   res.status(200).json({ avatarURL })
 }
-const getAllUsers = async (req, res) => {
-  try {
-    const allUsers = await getUsersService()
-    res.status(200).json(allUsers)
-  } catch (err) {
-    console.error(err)
-  }
-}
+
 const virifyController = async (req, res) => {
   const user = await verificationService(req)
   if (user === null) {
@@ -68,5 +60,4 @@ module.exports = {
   avatarController,
   virifyController,
   checkVerificationController,
-  getAllUsers,
 }

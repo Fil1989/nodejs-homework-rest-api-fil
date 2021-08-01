@@ -1,8 +1,12 @@
 const { User } = require('../dbModels/userModel')
 const bcrypt = require('bcrypt')
+require('dotenv').config()
+
 const gravatar = require('gravatar')
 const jwt = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid')
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 const nodemailer = require('nodemailer')
 
@@ -19,6 +23,21 @@ const registration = async (password, email, subscription) => {
   })
 
   await user.save()
+  const msg = {
+    to: email, // Change to your recipient
+    from: 'peacefilip1989@gmail.com', // Change to your verified sender
+    subject: 'Sending with SendGrid is Fun',
+    text: 'and easy to do anywhere, even with Node.js',
+    html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+  }
+  sgMail
+    .send(msg)
+    .then(() => {
+      console.log('Email sent')
+    })
+    .catch(error => {
+      console.error(error)
+    })
   async function main() {
     const transporter = nodemailer.createTransport({
       host: 'smtp.ethereal.email',
@@ -91,10 +110,7 @@ const changeAvatar = async (avatarURL, token) => {
   )
   return user.email
 }
-const getUsersService = async () => {
-  const users = await User.find({})
-  return users
-}
+
 const verificationService = async req => {
   const user = await User.findOneAndUpdate(
     { verificationtoken: req.params.verificationtoken },
@@ -142,5 +158,4 @@ module.exports = {
   changeAvatar,
   verificationService,
   verificationCheckService,
-  getUsersService,
 }
