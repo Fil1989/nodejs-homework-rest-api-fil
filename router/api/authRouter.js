@@ -6,7 +6,6 @@ const {
   logoutController,
   virifyController,
   checkVerificationController,
-  getAllUsers,
 } = require('../../controllers/authController')
 const { asyncWrapper } = require('../../errorHelpers/apiHelpers')
 const {
@@ -41,7 +40,6 @@ router.post('/register', validateUser, asyncWrapper(registrationController))
 
 router.post('/login', validateUser, asyncWrapper(loginController))
 router.post('/logout', authMiddleware, asyncWrapper(logoutController))
-router.get('/', asyncWrapper(getAllUsers))
 router.get('/verify/:verificationtoken', asyncWrapper(virifyController))
 router.post(
   '/verify',

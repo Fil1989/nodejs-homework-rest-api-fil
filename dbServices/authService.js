@@ -1,10 +1,14 @@
 const { User } = require('../dbModels/userModel')
 const bcrypt = require('bcrypt')
+require('dotenv').config()
+
 const gravatar = require('gravatar')
 const jwt = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid')
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
-const nodemailer = require('nodemailer')
+// const nodemailer = require('nodemailer')
 
 const registration = async (password, email, subscription) => {
   const avatarURL = gravatar.url(email)
@@ -19,29 +23,22 @@ const registration = async (password, email, subscription) => {
   })
 
   await user.save()
-  async function main() {
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: 'cordia.wolff@ethereal.email',
-        pass: 'P5Bp1rWDZHhNbejZrd',
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    })
-
-    await transporter.sendMail({
-      from: 'cordia.wolff@ethereal.email',
-      to: email,
-      subject: 'Verify your email  ✔',
-      text: `Please confirm your email adress GET localhost:3001/api/users/verify/${verificationtoken}`,
-      html: `<b>Please confirm your email adress GET localhost:3001/api/users/verify/${verificationtoken}</b>`,
-    })
+  const msg = {
+    to: email,
+    from: 'peacefilip1989@gmail.com',
+    subject: 'Verify your email  ✔',
+    text: `Please confirm your email adress https://connnections.herokuapp.com/api/users/verify/${verificationtoken}`,
+    html: `<a href="
+https://connnections.herokuapp.com/api/users/verify/${verificationtoken}">Please confirm your email adress</a>`,
   }
-  await main()
+  return sgMail
+    .send(msg)
+    .then(() => {
+      return 'user added. Please verify by email'
+    })
+    .catch(error => {
+      return error.message
+    })
 }
 const login = async (email, password) => {
   let user = await User.findOne({
@@ -91,10 +88,7 @@ const changeAvatar = async (avatarURL, token) => {
   )
   return user.email
 }
-const getUsersService = async () => {
-  const users = await User.find({})
-  return users
-}
+
 const verificationService = async req => {
   const user = await User.findOneAndUpdate(
     { verificationtoken: req.params.verificationtoken },
@@ -107,32 +101,25 @@ const verificationService = async req => {
 const verificationCheckService = async email => {
   const user = await User.findOne({ email })
   if (user.verify) {
-    return user.verify
+    return true
   } else {
-    async function main() {
-      const transporter = nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
-        port: 587,
-        secure: false, // true for 465, false for other ports
-        auth: {
-          user: 'cordia.wolff@ethereal.email',
-          pass: 'P5Bp1rWDZHhNbejZrd',
-        },
-        tls: {
-          rejectUnauthorized: false,
-        },
-      })
-
-      await transporter.sendMail({
-        from: 'peacefilip1989@gmail.com',
-        to: email,
-        subject: 'Verify your email  ✔',
-        text: `Please confirm your email adress GET localhost:3001/api/users/verify/${user.verificationtoken}`,
-        html: `<b>Please confirm your email adress GET localhost:3001/api/users/verify/${user.verificationtoken}</b>`,
-      })
+    const msg = {
+      to: email,
+      from: 'peacefilip1989@gmail.com',
+      subject: 'Verify your email  ✔',
+      text: `Please confirm your email adress https://connnections.herokuapp.com/api/users/verify/${user.verificationtoken}`,
+      html: `<a href="
+https://connnections.herokuapp.com/api/users/verify/${user.verificationtoken}">Please confirm your email adress</a>`,
     }
-    await main()
-    return user.verify
+    const sendVerification = sgMail
+      .send(msg)
+      .then(() => {
+        return user.verify
+      })
+      .catch(error => {
+        return error.message
+      })
+    return sendVerification
   }
 }
 module.exports = {
@@ -142,5 +129,4 @@ module.exports = {
   changeAvatar,
   verificationService,
   verificationCheckService,
-  getUsersService,
 }
