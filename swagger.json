@@ -10,7 +10,8 @@
     }
   },
   "consumes": [
-    "application/json"
+    "application/json",
+    "form/data"
   ],
   "produces": [
     "application/json"
@@ -230,33 +231,25 @@
         }
       }
     },
-    "/products/search": {
+    "/api/contacts/": {
       "get": {
         "tags": [
-          "Products"
+          "Contacts"
         ],
-        "summary": "Search and get a list of products by query",
+        "summary": "Getting all contacts by authorization of user",
         "security": [
           {
             "Bearer": []
           }
         ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "product",
-            "type": "string",
-            "description": "Enter name of the product you want to find (russian)",
-            "required": true
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductsResponse"
+                  "$ref": "#/components/schemas/ContactsResponse"
                 }
               }
             }
@@ -510,38 +503,45 @@
           "message": "Verification successful"
         }
       },
-      "ProductsResponse": {
-        "type": "object",
-        "properties": {
-          "kcal": {
-            "type": "number",
-            "description": "Product's kcal/100g"
-          },
-          "weight": {
-            "type": "number",
-            "description": "Product's weight (100g)"
-          },
-          "title": {
-            "type": "string",
-            "description": "Product's title"
-          },
-          "id": {
-            "type": "string",
-            "description": "Product's id"
+      "ContactsResponse": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Contact's name"
+            },
+            "email": {
+              "type": "string",
+              "description": "Contact's email"
+            },
+            "phone": {
+              "type": "string",
+              "description": "Contact's phone"
+            },
+            "_id": {
+              "type": "string",
+              "description": "Contact's id"
+            },
+            "userId": {
+              "type": "string",
+              "description": "Id of contact's owner"
+            },
+            "favorite": {
+              "type": "boolean",
+              "description": "Is the contact in favorites"
+            }
           }
         },
         "example": [
           {
-            "kcal": 95,
-            "weight": 100,
-            "title": "Банан",
-            "id": "5d5169"
-          },
-          {
-            "kcal": 48,
-            "weight": 100,
-            "title": "Банановый сок",
-            "id": "5d51694"
+            "favorite": false,
+            "_id": "610b04490e114838f4cc121c",
+            "name": "contact_test",
+            "email": "contact_test@gmail.com",
+            "phone": "1234567890",
+            "userId": "6109a955feac38001c822871"
           }
         ]
       },
