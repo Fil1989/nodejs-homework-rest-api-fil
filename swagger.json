@@ -103,7 +103,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": " #/components/schemas/LoginResponse"
+                  "$ref": "#/components/schemas/LoginResponse"
                 }
               }
             }
@@ -264,26 +264,24 @@
             "description": "Server error"
           }
         }
-      }
-    },
-    "/products": {
+      },
       "post": {
         "tags": [
-          "Products"
+          "Contacts"
         ],
-        "summary": "Add product",
+        "summary": "Add a contact",
         "security": [
           {
             "Bearer": []
           }
         ],
         "requestBody": {
-          "description": "Product's object",
+          "description": "Contact's object",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddProductRequest"
+                "$ref": "#/components/schemas/AddContactRequest"
               }
             }
           }
@@ -294,7 +292,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AddProductResponse"
+                  "$ref": "#/components/schemas/AddGetContactResponse"
                 }
               }
             }
@@ -311,12 +309,12 @@
         }
       }
     },
-    "/products/{productId}": {
-      "delete": {
+    "/api/contacts/{contactId}": {
+      "get": {
         "tags": [
-          "Products"
+          "Contacts"
         ],
-        "summary": "Remove product",
+        "summary": "Get contact by id",
         "security": [
           {
             "Bearer": []
@@ -325,9 +323,102 @@
         "parameters": [
           {
             "in": "path",
-            "name": "productId",
+            "name": "contactId",
             "type": "string",
-            "description": "Product's id",
+            "description": "Contact's id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Found contact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddGetContactResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Contacts"
+        ],
+        "summary": "Change contact info",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "contactId",
+            "type": "string",
+            "description": "Contact's id",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "Contact's object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddContactRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Found contact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddGetContactResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Contacts"
+        ],
+        "summary": "Remove a contact",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "contactId",
+            "type": "string",
+            "description": "Contact's id",
             "required": true
           }
         ],
@@ -347,12 +438,12 @@
         }
       }
     },
-    "/products/{date}": {
-      "get": {
+    "/api/contacts/{contactId}/favorite": {
+      "patch": {
         "tags": [
-          "Products"
+          "Contacts"
         ],
-        "summary": "Get info for day",
+        "summary": "Change favorite status",
         "security": [
           {
             "Bearer": []
@@ -361,19 +452,30 @@
         "parameters": [
           {
             "in": "path",
-            "name": "date",
+            "name": "contactId",
             "type": "string",
-            "description": "Enter date",
+            "description": "Id of the contact",
             "required": true
           }
         ],
+        "requestBody": {
+          "description": "Favorite property",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FavoriteRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DateResponse"
+                  "$ref": "#/components/schemas/AddGetContactResponse"
                 }
               }
             }
@@ -545,68 +647,74 @@
           }
         ]
       },
-      "AddProductRequest": {
+      "AddContactRequest": {
         "type": "object",
         "required": [
-          "kcal",
-          "weight",
-          "title"
+          "name",
+          "email",
+          "phone"
         ],
         "properties": {
-          "kcal": {
-            "type": "number",
-            "description": "Product's kcal/100g"
-          },
-          "weight": {
-            "type": "number",
-            "description": "Product's weight (g)"
-          },
-          "title": {
+          "name": {
             "type": "string",
-            "description": "Product's name"
+            "description": "Contact's name"
+          },
+          "email": {
+            "type": "string",
+            "description": "Contact's email",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Contact's name"
+          },
+          "favorite": {
+            "type": "boolean",
+            "description": "Is contact in favorits"
           }
         },
         "example": {
-          "kcal": 20,
-          "weight": 250,
-          "title": "Томат (помидор)"
+          "name": "Peter",
+          "email": "petet_pen@gmail.com",
+          "phone": "+1234567890"
         }
       },
-      "AddProductResponse": {
+      "AddGetContactResponse": {
         "type": "object",
         "properties": {
-          "date": {
+          "name": {
             "type": "string",
-            "description": "Day's date"
+            "description": "Contact's name"
           },
           "_id": {
             "type": "string",
-            "description": "Product's id"
+            "description": "Contact's id"
           },
-          "kcal": {
-            "type": "number",
-            "description": "Kcal consumed"
-          },
-          "weight": {
-            "type": "number",
-            "description": "Product's weight changed by the user"
-          },
-          "title": {
+          "email": {
             "type": "string",
-            "description": "Product's name"
+            "description": "Contact's email"
           },
-          "owner": {
+          "phone": {
             "type": "string",
-            "description": "Owner's id product"
+            "description": "Contact's phone number"
+          },
+          "favorite": {
+            "type": "boolean",
+            "description": "Is contact in favorites"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Contact's owner id"
           }
         },
         "example": {
-          "date": "2021-07-27",
-          "_id": "61003f8",
-          "kcal": 50,
-          "weight": 250,
-          "title": "Томат (помидор)",
-          "owner": "60ffdb"
+          "favorite": false,
+          "_id": "610bcbf082cd4533ac4a8dfe",
+          "name": "Peter",
+          "email": "peter_pen@gmail.com",
+          "phone": "+1234567890",
+          "userId": "610bab616d448d001c8f53dd",
+          "__v": 0
         }
       },
       "DateResponse": {
@@ -676,6 +784,18 @@
           "totalKcalPerDay": 158,
           "kcalRemain": 1412,
           "percentage": 10
+        }
+      },
+      "FavoriteRequest": {
+        "type": "object",
+        "properties": {
+          "favorite": {
+            "type": "boolean",
+            "description": "Is contact in favorites"
+          }
+        },
+        "example": {
+          "favorite": true
         }
       }
     },

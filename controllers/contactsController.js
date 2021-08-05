@@ -9,8 +9,8 @@ const listContacts = async (req, res) => {
 async function getContactById(req, res) {
   const { _id } = req.user
   const contactId = req.params.contactId
-  const contact = await Contact.find({ _id: contactId, userId: _id })
-  await res.status(200).json({ contact })
+  const contact = await Contact.findOne({ _id: contactId, userId: _id })
+  await res.status(200).json(contact)
 }
 
 async function addContact(req, res) {
@@ -22,30 +22,47 @@ async function addContact(req, res) {
 
 async function removeContact(req, res) {
   const { _id } = req.user
-  await Contact.findOneAndDelete({ _id: req.params.contactId, userId: _id })
+  const contactToRemove = await Contact.findOneAndDelete({
+    _id: req.params.contactId,
+    userId: _id,
+  })
+  if (!contactToRemove) {
+    await res.status(400).json({ message: "User don't have this contact" })
+    return
+  }
   await res.status(200).json({ message: 'contact deleted' })
 }
 const updateContact = async (req, res) => {
   const { _id } = req.user
-  await Contact.findOneAndUpdate(
+  let updatedContact = await Contact.findOneAndUpdate(
     { _id: req.params.contactId, userId: _id },
     {
       $set: { ...req.body, userId: _id },
     },
   )
-  const updatedContact = await getContactById(req, res)
+  if (!updatedContact) {
+    await res.status(400).json({ message: 'Contact not found' })
+    return
+  }
+  updatedContact = await getContactById(req, res)
+
   await res.status(200).json(updatedContact)
 }
 const updateStatusContact = async (req, res) => {
   const { _id } = req.user
 
-  await Contact.findOneAndUpdate(
+  let updatedContact = await Contact.findOneAndUpdate(
     { _id: req.params.contactId, userId: _id },
     {
       $set: req.body,
     },
   )
-  const updatedContact = await getContactById(req, res)
+  if (!updatedContact) {
+    await res.status(400).json({ message: 'Contact not found' })
+    return
+  }
+  updatedContact = await getContactById(req, res)
+
   await res.status(200).json(updatedContact)
 }
 module.exports = {
